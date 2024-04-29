@@ -1,35 +1,39 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Enum, TIMESTAMP
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Enum, TIMESTAMP, Table
 from sqlalchemy.orm import relationship
 
 from src.database import Base
 from .choices import item_type
 
-class Item(Base):
-    __tablename__ = "items"
+order_items = Table('order_items', Base.metadata,
+                    Column('order_id', Integer, ForeignKey('orders.id')),
+                    Column('item_id', Integer, ForeignKey('items.id'))
+                    )
 
-    id = Column(Integer, primary_key=True)
+
+class Item(Base):
+    __tablename__ = 'items'
+
+    id = Column(Integer, primary_key=True, index=True)
     title = Column(String)
-    description = Column(String)
+    description = Column(String, nullable=True)
     price = Column(Integer)
-    code = Column(Integer, unique=True)
-    color = Column(String)
-    weight = Column(Integer)
-    height = Column(Integer)
-    width = Column(Integer)
-    types = Column(Enum(*item_type, name="item_type_enum"))
-    amount = Column(Integer)
+    code = Column(Integer)
+    color = Column(String, nullable=True)
+    weight = Column(Integer, nullable=True)
+    height = Column(Integer, default=0)
+    width = Column(Integer, default=0)
+    types = Column(String)
+    amount = Column(Integer, default=0)
+
+    # Связь между товарами и заказами через смежную таблицу
+    orders = relationship("Order", secondary=order_items, back_populates="items")
 
 
 class Order(Base):
-    __tablename__ = "orders"
+    __tablename__ = 'orders'
 
-    id = Column(Integer, primary_key=True)
-    sum_price = Column(Integer)
-    amount_items = Column(Integer)
-    status = Column(String)
-    discount = Column(Integer)
-    #items = Column()
+    id = Column(Integer, primary_key=True, index=True)
 
-    user_id = Column(Integer, ForeignKey("users.id"))
-    owner = relationship("User", back_populates="orders")
+    # Теперь заказы могут содержать список товаров
+    items = relationship("Item", secondary=order_items, back_populates="orders")
 

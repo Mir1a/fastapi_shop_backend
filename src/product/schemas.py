@@ -1,7 +1,9 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import List, Optional
 
 from enum import Enum
+
+#region -----Item-----
 
 class item_type(str,Enum):
     KBT = "Крупнобытовая техника"
@@ -10,7 +12,7 @@ class item_type(str,Enum):
     New_Media = "New Media"
     ACC = "Аксессуры"
 
-#region -----Item-----
+
 class ItemBase(BaseModel):
     title: str
     description: Optional[str]
@@ -30,31 +32,24 @@ class ItemCreate(ItemBase):
 
 class Item(ItemBase):
     id: int
+
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 #endregion
 
 
 #region -----Order-----
-class OrderBase(BaseModel):
-    discount: int
 
 
-class OrderCreate(OrderBase):
-    pass
+class OrderItem(BaseModel):
+    item_id: int
+    quantity: int
 
-
-class Order(OrderBase):
-    id: int
-    sum_price: int
-    amount_items: int
-    status: str
-    user_id: int
+class Order(BaseModel):
+    items: List[OrderItem]
 
     class Config:
         orm_mode = True
 
 #endregion
-
-#region -----User-----
