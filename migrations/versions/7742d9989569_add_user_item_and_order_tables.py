@@ -1,8 +1,8 @@
-"""Item and Order models
+"""Add user, item, and order tables
 
-Revision ID: 07f9334f5e61
+Revision ID: 7742d9989569
 Revises: 
-Create Date: 2024-04-29 15:06:10.760041
+Create Date: 2024-04-29 15:25:11.929705
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '07f9334f5e61'
+revision: str = '7742d9989569'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -37,6 +37,10 @@ def upgrade() -> None:
     op.create_index(op.f('ix_items_id'), 'items', ['id'], unique=False)
     op.create_table('orders',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('sum_price', sa.Integer(), nullable=True),
+    sa.Column('amount_items', sa.Integer(), nullable=True),
+    sa.Column('status', sa.Enum('Черновик', 'Ожидание оплаты', 'Оплачен', 'В пути', 'Товар в пункте назначения', name='status_enum'), nullable=True),
+    sa.Column('discount', sa.Integer(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_orders_id'), 'orders', ['id'], unique=False)

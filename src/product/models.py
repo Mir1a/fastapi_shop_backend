@@ -2,7 +2,7 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Enum, TIMES
 from sqlalchemy.orm import relationship
 
 from src.database import Base
-from .choices import item_type
+from .choices import item_type, order_statuses
 
 order_items = Table('order_items', Base.metadata,
                     Column('order_id', Integer, ForeignKey('orders.id')),
@@ -32,6 +32,9 @@ class Order(Base):
     __tablename__ = 'orders'
 
     id = Column(Integer, primary_key=True, index=True)
-
+    sum_price = Column(Integer)
+    amount_items = Column(Integer)
+    status = Column(Enum(*order_statuses, name="status_enum"))
+    discount = Column(Integer)
     items = relationship("Item", secondary=order_items, back_populates="orders")
 
