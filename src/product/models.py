@@ -22,10 +22,9 @@ class Item(Base):
     weight = Column(Integer, nullable=True)
     height = Column(Integer, default=0)
     width = Column(Integer, default=0)
-    types = Column(String)
+    types = Column(Enum(*item_type, name="item_type_enum"))
     amount = Column(Integer, default=0)
 
-    # Связь между товарами и заказами через смежную таблицу
     orders = relationship("Order", secondary=order_items, back_populates="items")
 
 
@@ -34,6 +33,5 @@ class Order(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    # Теперь заказы могут содержать список товаров
     items = relationship("Item", secondary=order_items, back_populates="orders")
 

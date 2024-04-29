@@ -1,8 +1,8 @@
 """Item and Order models
 
-Revision ID: 5421a9764354
+Revision ID: 07f9334f5e61
 Revises: 
-Create Date: 2024-04-29 15:01:28.899084
+Create Date: 2024-04-29 15:06:10.760041
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '5421a9764354'
+revision: str = '07f9334f5e61'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -30,7 +30,7 @@ def upgrade() -> None:
     sa.Column('weight', sa.Integer(), nullable=True),
     sa.Column('height', sa.Integer(), nullable=True),
     sa.Column('width', sa.Integer(), nullable=True),
-    sa.Column('types', sa.String(), nullable=True),
+    sa.Column('types', sa.Enum('Крупнобытовая техника', 'Мелкобытовая техника', 'Телевизоры', 'New Media', 'Аксессуры', name='item_type_enum'), nullable=True),
     sa.Column('amount', sa.Integer(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
