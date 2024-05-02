@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 
 from src.product.routers import router as product_router
 from src.product import models, schemas
-from . import crud
 from .database import async_sessionmaker
 
 app = FastAPI(
