@@ -65,6 +65,6 @@ class Order(BaseModel):
     items: List[OrderItem]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 #endregion

@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 
 from src.database import Base
 from .choices import item_type, order_statuses
+from src.user.models import user_items
 
 order_items = Table('order_items', Base.metadata,
                     Column('order_id', Integer, ForeignKey('orders.id')),
@@ -15,7 +16,7 @@ supply_sender_items = Table("supply_sender_items", Base.metadata,
                             Column("supply_sender",Integer, ForeignKey("supply_senders.id")))
 
 class Item(Base):
-    __tablename__ = 'items'
+    __tablename__ = "items"
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String)
@@ -30,7 +31,8 @@ class Item(Base):
     amount = Column(Integer, default=0)
 
     orders = relationship("Order", secondary=order_items, back_populates="items")
-    supply_senders = relationship("supply_senders", secondary=supply_sender_items, back_populates="items")
+    supply_senders = relationship("Supply_sender", secondary=supply_sender_items, back_populates="items_supply")
+    users = relationship("User", secondary=user_items, back_populates="items")
 
 
 class Order(Base):
@@ -43,7 +45,7 @@ class Order(Base):
     discount = Column(Integer)
 
     items = relationship("Item", secondary=order_items, back_populates="orders")
-    transactions = relationship("Transaction", back_populates="order", uselist=False)
+    transaction = relationship("Transaction", back_populates="order")
 
 class Supply(Base):
     __tablename__ = "supplies"
@@ -56,5 +58,5 @@ class Supply_sender(Base):
     __tablename__ = "supply_senders"
 
     id = Column(Integer, primary_key=True, index=True)
-    items = relationship("Item", secondary=supply_sender_items, back_populates="supply_senders")
+    items_supply = relationship("Item", secondary=supply_sender_items, back_populates="supply_senders")
     amount = Column(Integer)

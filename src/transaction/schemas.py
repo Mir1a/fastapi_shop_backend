@@ -5,18 +5,21 @@ from enum import Enum
 
 from src.product.models import Order
 
+class transaction_type(str,Enum):
+    Выполнено = "Выполнено"
+    Ожидание_транзакции = "Ожидание транзакции"
+
 class TransactionBase(BaseModel):
-    code: int
     price: int
-    status: str
-    created_at: Optional[datetime] = None
+    status: transaction_type
+    user_id: int
+    order_id: int
 
 class TransactionCreate(TransactionBase):
     pass
 
 class Transaction(TransactionBase):
     id: int
-    order: Order
 
     class Config:
-        orm_mode = True
+        from_attributes = True

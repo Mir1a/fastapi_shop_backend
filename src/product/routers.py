@@ -20,7 +20,7 @@ async def add_item(new_item:  Annotated[schemas.ItemCreate, Depends()], session:
         session.add(db_item)
     return db_item
 
-@router.get("/items")
+@router.get("/items_all")
 async def get_items():
     async with async_sessionmaker() as session:
         query = select(models.Item)
@@ -47,7 +47,7 @@ async def create_order(order: Annotated[schemas.OrderCreate, Depends()], session
         session.add(db_order)
     return db_order
 
-@router.get("/orders")
+@router.get("/orders_all")
 async def get_orders():
     async with async_sessionmaker() as session:
         query = select(models.Order).options(selectinload(models.Order.items))
