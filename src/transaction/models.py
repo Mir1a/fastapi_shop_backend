@@ -13,7 +13,7 @@ class Transaction(Base):
     __tablename__ = "transactions"
 
     id = Column(Integer, primary_key=True, index=True)
-    code = Column(Integer, autoincrement=True)
+    #code = Column(Integer, autoincrement=True)
     price = Column(Integer)
     status = Column(Enum(*transaction_statuses, name="transaction_enum"))
     created_at = Column(DateTime, default=datetime.now)

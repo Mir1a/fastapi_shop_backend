@@ -1,6 +1,7 @@
 from typing import Annotated, List
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi_cache.decorator import cache
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -21,6 +22,7 @@ async def add_item(new_item:  Annotated[schemas.ItemCreate, Depends()], session:
     return db_item
 
 @router.get("/items_all")
+@cache(expire=30)
 async def get_items():
     async with async_sessionmaker() as session:
         query = select(models.Item)

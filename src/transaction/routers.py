@@ -33,3 +33,11 @@ async def create_transaction(transaction: Annotated[schemas.TransactionCreate, D
         )
         session.add(db_transaction)
     return db_transaction
+
+@router.get("/transactions_all")
+async def get_transaction():
+    async with async_sessionmaker() as session:
+        query = select(models.Transaction)
+        result = await session.execute(query)
+        orders = result.scalars().all()
+        return orders
