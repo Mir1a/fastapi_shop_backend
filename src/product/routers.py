@@ -8,27 +8,31 @@ from sqlalchemy.orm import selectinload
 
 from src.database import get_async_session, async_sessionmaker
 from src.product import models, schemas
+from src.user.models import User
+from ..user.base_config import current_user
 
 router = APIRouter(
     prefix="/product",
     tags=["Product"]
 )
 
+
 @router.post("/item_create")
-async def add_item(new_item:  Annotated[schemas.ItemCreate, Depends()], session: AsyncSession = Depends(get_async_session)):
-    async with session.begin():
-        db_item = models.Item(title=new_item.title,
-                              description=new_item.description,
-                              price=new_item.price,
-                              code=new_item.code,
-                              color=new_item.color,
-                              weight=new_item.weight,
-                              height=new_item.height,
-                              width=new_item.width,
-                              types=new_item.types,
-                              amount=new_item.amount)
-        session.add(db_item)
+async def add_item(new_item:  Annotated[schemas.ItemCreate, Depends()], current_user: User = Depends(current_user), db: AsyncSession = Depends(get_async_session)
+):
+    db_item = models.Item(title=new_item.title,
+                          description=new_item.description,
+                          price=new_item.price,
+                          code=new_item.code,
+                          color=new_item.color,
+                          weight=new_item.weight,
+                          height=new_item.height,
+                          width=new_item.width,
+                          types=new_item.types,
+                          amount=new_item.amount)
+    db.add(db_item)
     return db_item
+
 
 @router.get("/items_all")
 @cache(expire=30)
@@ -38,6 +42,7 @@ async def get_items():
         result = await session.execute(query)
         items = result.scalars().all()
         return items
+
 @router.post("/order_create")
 async def create_order(order: Annotated[schemas.OrderCreate, Depends()], session: AsyncSession = Depends(get_async_session)):
     async with session.begin():
@@ -57,6 +62,7 @@ async def create_order(order: Annotated[schemas.OrderCreate, Depends()], session
         )
         session.add(db_order)
     return db_order
+
 
 @router.get("/orders_all")
 async def get_orders():

@@ -1,8 +1,8 @@
-"""Add models
+"""add models
 
-Revision ID: 9b655dcfcb7e
+Revision ID: b76d9eeedc5a
 Revises: 
-Create Date: 2024-05-08 13:33:11.043089
+Create Date: 2024-06-18 12:20:38.584807
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '9b655dcfcb7e'
+revision: str = 'b76d9eeedc5a'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -44,6 +44,13 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_orders_id'), 'orders', ['id'], unique=False)
+    op.create_table('roles',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(), nullable=False),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('name')
+    )
+    op.create_index(op.f('ix_roles_id'), 'roles', ['id'], unique=False)
     op.create_table('supplies',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('data', sa.String(), nullable=True),
@@ -56,19 +63,6 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_supply_senders_id'), 'supply_senders', ['id'], unique=False)
-    op.create_table('users',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('email', sa.String(), nullable=True),
-    sa.Column('name', sa.String(), nullable=True),
-    sa.Column('last_name', sa.String(), nullable=True),
-    sa.Column('avatar', sa.String(), nullable=True),
-    sa.Column('born', sa.DateTime(), nullable=True),
-    sa.Column('is_staff', sa.Boolean(), nullable=True),
-    sa.Column('is_active', sa.Boolean(), nullable=True),
-    sa.Column('password', sa.String(), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_users_id'), 'users', ['id'], unique=False)
     op.create_table('order_items',
     sa.Column('order_id', sa.Integer(), nullable=True),
     sa.Column('item_id', sa.Integer(), nullable=True),
@@ -80,6 +74,23 @@ def upgrade() -> None:
     sa.Column('supply_sender', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['item_id'], ['items.id'], ),
     sa.ForeignKeyConstraint(['supply_sender'], ['supply_senders.id'], )
+    )
+    op.create_table('users',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('email', sa.String(), nullable=True),
+    sa.Column('name', sa.String(), nullable=True),
+    sa.Column('last_name', sa.String(), nullable=True),
+    sa.Column('avatar', sa.String(), nullable=True),
+    sa.Column('born', sa.DateTime(), nullable=True),
+    sa.Column('hashed_password', sa.String(length=1024), nullable=False),
+    sa.Column('is_active', sa.Boolean(), nullable=False),
+    sa.Column('is_superuser', sa.Boolean(), nullable=False),
+    sa.Column('is_verified', sa.Boolean(), nullable=False),
+    sa.Column('role_id', sa.Integer(), nullable=True),
+    sa.Column('manager_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['manager_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['role_id'], ['roles.id'], ),
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('transactions',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -108,14 +119,15 @@ def downgrade() -> None:
     op.drop_table('user_items')
     op.drop_index(op.f('ix_transactions_id'), table_name='transactions')
     op.drop_table('transactions')
+    op.drop_table('users')
     op.drop_table('supply_sender_items')
     op.drop_table('order_items')
-    op.drop_index(op.f('ix_users_id'), table_name='users')
-    op.drop_table('users')
     op.drop_index(op.f('ix_supply_senders_id'), table_name='supply_senders')
     op.drop_table('supply_senders')
     op.drop_index(op.f('ix_supplies_id'), table_name='supplies')
     op.drop_table('supplies')
+    op.drop_index(op.f('ix_roles_id'), table_name='roles')
+    op.drop_table('roles')
     op.drop_index(op.f('ix_orders_id'), table_name='orders')
     op.drop_table('orders')
     op.drop_index(op.f('ix_items_id'), table_name='items')

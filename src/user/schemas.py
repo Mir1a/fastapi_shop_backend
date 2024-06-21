@@ -1,20 +1,44 @@
+from typing import Optional
+from fastapi_users import schemas
 from pydantic import BaseModel
-from typing import List, Optional
-from datetime import datetime
 
-class UserBase(BaseModel):
-    email: str
+
+class UserRead(schemas.BaseUser[int]):
+    id: int
     name: str
-    last_name: str
-    avatar: Optional[str] = None
-    born: Optional[datetime] = None
-    is_staff: Optional[bool] = False
-    is_active: Optional[bool] = True
+    role_id: int
+    is_active: bool = True
+    is_superuser: bool = False
+    is_verified: bool = False
+    manager_id: Optional[int] = None
 
-class UserCreate(UserBase):
+    class Config:
+        from_attributes = True
+
+
+class UserCreate(schemas.BaseUserCreate):
+    name: str
     password: str
+    role_id: int
+    manager_id: Optional[int] = None
 
-class User(UserBase):
+
+class RoleBase(BaseModel):
+    name: str
+    can_view_all_requests: Optional[bool] = False
+    can_view_own_requests: Optional[bool] = True
+    can_manage_users: Optional[bool] = False
+
+
+class RoleBase(BaseModel):
+    name: str
+
+
+class RoleCreate(RoleBase):
+    pass
+
+
+class Role(RoleBase):
     id: int
 
     class Config:
