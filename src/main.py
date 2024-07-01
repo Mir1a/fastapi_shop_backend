@@ -1,4 +1,5 @@
 from fastapi import Depends, FastAPI, HTTPException
+from mangum import Mangum
 from sqlalchemy.future import select
 from sqlalchemy.orm import Session
 from fastapi_cache import FastAPICache
@@ -46,3 +47,4 @@ app.include_router(user_router)
 async def startup():
     redis = aioredis.from_url("redis://localhost")
     FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
+
