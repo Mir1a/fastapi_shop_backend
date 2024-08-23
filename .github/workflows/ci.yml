@@ -9,28 +9,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          ssh-key: ${{ secrets.SSH_KEY }}
-
-      - name: Cache pip dependencies
-        uses: actions/cache@v2
-        with:
-            path: ~/.cache/pip
-            key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-            restore-keys: |
-              ${{ runner.os }}-pip-
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
 
       - name: Set up Git
         run: |
           git config --global user.name 'GitHub Actions'
           git config --global user.email 'actions@github.com'
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-
-      - name: Create new version tag
-        run: |
+          
+          - name: Create new version tag
+          run: |
           git tag v1.0.${{ github.run_number }}
-          git remote set-url origin git@github.com:${{ github.repository }}.git
           git push origin v1.0.${{ github.run_number }}
